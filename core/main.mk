@@ -139,66 +139,17 @@ $(warning ************************************************************)
 $(error Directory names containing spaces not supported)
 endif
 
-# Check for the corrent jdk
-ifneq ($(shell java -version 2>&1 | grep -i openjdk),)
-$(info ************************************************************)
-$(info You are attempting to build with an unsupported JDK.)
-$(info $(space))
-$(info You use OpenJDK but only Sun/Oracle JDK is supported.)
-$(info Please follow the machine setup instructions at)
-$(info $(space)$(space)$(space)$(space)https://source.android.com/source/download.html)
-$(info ************************************************************)
-$(error stop)
-endif
-
 # Check for the correct version of java
 java_version := $(shell java -version 2>&1 | head -n 1 | grep '^java .*[ "]1\.6[\. "$$]')
-ifeq ($(strip $(java_version)),)
-$(info ************************************************************)
-$(info You are attempting to build with the incorrect version)
-$(info of java.)
-$(info $(space))
-$(info Your version is: $(shell java -version 2>&1 | head -n 1).)
-$(info The correct version is: Java SE 1.6.)
-$(info $(space))
-$(info Please follow the machine setup instructions at)
-$(info $(space)$(space)$(space)$(space)https://source.android.com/source/download.html)
-$(info ************************************************************)
-$(error stop)
+ifneq ($(shell java -version 2>&1 | grep -i openjdk),)
+java_version :=
 endif
 
 # Check for the correct version of javac
 javac_version := $(shell javac -version 2>&1 | head -n 1 | grep '[ "]1\.6[\. "$$]')
-ifeq ($(strip $(javac_version)),)
-$(info ************************************************************)
-$(info You are attempting to build with the incorrect version)
-$(info of javac.)
-$(info $(space))
-$(info Your version is: $(shell javac -version 2>&1 | head -n 1).)
-$(info The correct version is: 1.6.)
-$(info $(space))
-$(info Please follow the machine setup instructions at)
-$(info $(space)$(space)$(space)$(space)https://source.android.com/source/download.html)
-$(info ************************************************************)
-$(error stop)
-endif
 
-ifeq (darwin,$(HOST_OS))
-GCC_REALPATH = $(realpath $(shell which $(HOST_CC)))
-ifneq ($(findstring llvm-gcc,$(GCC_REALPATH)),)
-  # Using LLVM GCC results in a non functional emulator due to it
-  # not honouring global register variables
-  $(warning ****************************************)
-  $(warning * gcc is linked to llvm-gcc which will *)
-  $(warning * not create a useable emulator.       *)
-  $(warning ****************************************)
-  BUILD_EMULATOR := false
-else
-  BUILD_EMULATOR := true
-endif
-else   # HOST_OS is not darwin
-  BUILD_EMULATOR := true
-endif  # HOST_OS is darwin
+# Whether to build EMULATOR or not
+BUILD_EMULATOR := false
 
 $(shell echo 'VERSIONS_CHECKED := $(VERSION_CHECK_SEQUENCE_NUMBER)' \
         > $(OUT_DIR)/versions_checked.mk)
