@@ -70,7 +70,6 @@ TARGET_NO_UNDEFINED_LDFLAGS := -Wl,--no-undefined
 
 TARGET_arm_CFLAGS :=    -O2 \
                         -fomit-frame-pointer \
-                        -fpredictive-commoning \
                         -fstrict-aliasing    \
                         -funswitch-loops
 
@@ -155,7 +154,6 @@ libc_root := bionic/libc
 libm_root := bionic/libm
 libstdc++_root := bionic/libstdc++
 libthread_db_root := bionic/libthread_db
-
 
 ## on some hosts, the target cross-compiler is not available so do not run this command
 ifneq ($(wildcard $(TARGET_CC)),)
